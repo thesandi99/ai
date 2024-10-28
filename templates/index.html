@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audio Noise Reduction</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f4f4f9;
+      }
+      .container {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        text-align: center;
+      }
+      h1 {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+      }
+      input[type="file"] {
+        margin-bottom: 15px;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .message {
+        margin-top: 15px;
+        font-weight: bold;
+      }
+      audio {
+        margin-top: 15px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Upload Audio for Noise Reduction</h1>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file" accept="audio/*" required />
+        <button type="submit">Reduce Noise</button>
+      </form>
+      <div class="message" id="message"></div>
+      <audio id="audioPlayer" controls style="display: none"></audio>
+    </div>
+
+    <script>
+      document.getElementById("uploadForm").onsubmit = async function (e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const messageDiv = document.getElementById("message");
+        const audioPlayer = document.getElementById("audioPlayer");
+        messageDiv.textContent = "Processing...";
+        audioPlayer.style.display = "none";
+
+        try {
+          const response = await fetch("/enhance_audio", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (response.ok) {
+            const audioBlob = await response.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            audioPlayer.src = audioUrl;
+            audioPlayer.style.display = "block";
+            messageDiv.textContent =
+              "Noise reduction complete. You can play the audio below.";
+          } else {
+            const data = await response.json();
+            messageDiv.textContent = "Error: " + data.error;
+          }
+        } catch (error) {
+          messageDiv.textContent = "An error occurred: " + error.message;
+        }
+      };
+    </script>
+  </body>
+</html>
