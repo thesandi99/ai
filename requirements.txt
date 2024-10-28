@@ -1,2 +1,7 @@
+Flask
 spleeter
-requests
+pydub
+noisereduce
+librosa
+numpy
+soundfile
