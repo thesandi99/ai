@@ -1,3 +1,5 @@
+setuptools
+wheel
 Flask==2.2.2
 spleeter==2.3.0
 pydub==0.25.1
